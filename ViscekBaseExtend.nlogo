@@ -13,7 +13,6 @@ patches-own [
 
 doves-own [
   my-area
-  headings
 
   flock-assigned	
 ]
@@ -30,10 +29,11 @@ to setup
   clear-all
 
   ask patches [set pcolor white]
-  create-doves num [
+
+  create-doves n-doves [
     setxy random-pxcor random-pycor
     set color blue
-    set headings []
+    set heading random 360
     set flock-assigned false
     set shape "bird"
   ]
@@ -49,24 +49,15 @@ to setup
   ]
 
   set psi 0
-  set hawk-roam-angle 45
+  set hawk-roam-angle 25
   reset-ticks
 end
-
 
 
 to go
   tick
 
-  ask doves [
-    let a doves in-radius radius
-    let theta average-flockmate-heading a
-    set heading (theta + (random-float heading-noise-range) - (heading-noise-range / 2) )
-  ]
-
-  ask doves [
-    fd 1
-  ]
+  update-doves
 
   seek-and-destroy
 
@@ -80,6 +71,51 @@ to go
 
 end
 
+to update-doves
+
+  ask doves [
+    ;compute the direction of flock
+    let theta heading
+    let a doves in-radius radius
+    if a != nobody [
+      set theta average-flockmate-heading a
+    ]
+    let in-flock-heading add-noise-to-heading heading-noise-range theta
+
+    if-else any? hawks in-radius dove-vision[
+      ;take into accoutn the presence of hawks and adjust the direction
+      let threats hawks in-radius dove-vision
+      let avg-hawk-direction optimal-hawk-avoiding-heading threats
+      let fear-heading add-noise-to-heading dove-fear-dir-noise avg-hawk-direction
+
+      let optimal-heading (((in-flock-heading - 180) * threat-ignorance + (fear-heading - 180) * (1 - threat-ignorance)) + 180)
+      set heading optimal-heading
+
+      fd dove-boost-speed
+    ][
+      ;stay with the flock
+      set heading in-flock-heading
+
+      fd dove-standard-speed
+    ]
+ ]
+
+end
+
+to-report add-noise-to-heading [noise some-heading]
+  let noisy-heading (some-heading + (random-float 2 * noise) - noise)
+  if noisy-heading > 360 [
+    report noisy-heading mod 360
+  ]
+
+  if noisy-heading < 0 [
+    report 360 - ((abs noisy-heading) mod 360)
+  ]
+
+  report noisy-heading
+
+end
+
 to seek-and-destroy
 
   ask hawks [
@@ -90,7 +126,7 @@ to seek-and-destroy
         ask current-target [set color green]
       ]
     ][
-      ;the prey ma have dropped out of sight
+      ;the prey ma have dropped out of sight. Unlock it.
       if current-target != nobody and distance current-target > hawk-vision[
         ask current-target [set color blue]
         set current-target nobody
@@ -102,19 +138,24 @@ to seek-and-destroy
     if-else current-target = nobody[
       if-else carries-prey = false [
         if-else eating = -1[
+
           ;wander around the world in search of prey
           set heading heading + (random (2 * hawk-roam-angle)) - hawk-roam-angle
           fd hawk-search-speed
+
         ][
+
           ;spend some time eating without any motion
           set eating eating + 1
           if eating >= time-to-eat [
             set eating -1
             set carries-prey false
             set current-target nobody
+
           ]
         ]
       ][
+
         ;fly to the eating spot
         set heading towardsxy [pxcor] of eating-spot [pycor] of eating-spot
         fd hawk-search-speed
@@ -122,6 +163,7 @@ to seek-and-destroy
           set carries-prey false
           set eating 0
         ]
+
       ]
     ][
       ;follow prey
@@ -129,8 +171,10 @@ to seek-and-destroy
       fd hawk-hunt-speed
 
       ;catch a dove
-      if distance current-target < 2[
-        ask current-target [die]
+      let closest-dove min-one-of doves in-radius 2 [distance myself]
+      if closest-dove != nobody [
+        ask current-target [set color blue]
+        ask closest-dove [die]
         set eating-spot []
         set eating-spot one-of patches in-radius 30
         set carries-prey true
@@ -166,11 +210,23 @@ to-report average-flockmate-heading [flockmates]  ;; turtle procedure
     ;; We can't just average the heading variables here.
     ;; For example, the average of 1 and 359 should be 0,
     ;; not 180. So we have to use trigonometry.
-    let x-component sum [dx] of flockmates
-    let y-component sum [dy] of flockmates
+    let x-component mean [dx] of flockmates
+    let y-component mean [dy] of flockmates
     ifelse x-component = 0 and y-component = 0
        [ report heading ]
        [ report atan x-component y-component ]
+end
+
+to-report optimal-hawk-avoiding-heading [hawks-threats]
+
+  let dovex xcor
+  let dovey ycor
+  let x-comp mean [dovex - xcor] of hawks-threats
+  let y-comp mean [dovey - ycor] of hawks-threats
+
+  ifelse x-comp = 0 and y-comp = 0
+       [ report heading ]
+       [ report atan x-comp y-comp ]
 end
 
 to-report heading-variance
@@ -216,11 +272,11 @@ end
 GRAPHICS-WINDOW
 244
 10
-1065
-832
+1169
+936
 -1
 -1
-4.045
+9.08
 1
 10
 1
@@ -230,10 +286,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--100
-100
--100
-100
+-50
+50
+-50
+50
 0
 0
 1
@@ -275,45 +331,30 @@ NIL
 1
 
 SLIDER
-21
-121
-193
-154
-num
-num
-0
+19
+127
+191
+160
+n-doves
+n-doves
+10
 1000
-57.0
+194.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-21
-154
+19
+160
+191
 193
-187
 radius
 radius
 0
 20
-3.44
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-21
-188
-193
-221
-eta
-eta
-0
-20
-20.0
+2.18
 0.01
 1
 NIL
@@ -356,10 +397,10 @@ NIL
 1
 
 SWITCH
-19
-271
-169
-304
+1184
+695
+1334
+728
 show-voronoi?
 show-voronoi?
 1
@@ -385,10 +426,10 @@ PENS
 "Pen 1" 1.0 0 -5509967 true "" "plotxy ticks heading-variance"
 
 SLIDER
-20
-230
-190
-263
+1185
+732
+1355
+765
 flock-size-threshold
 flock-size-threshold
 1
@@ -418,12 +459,27 @@ PENS
 "Pen 1" 1.0 0 -9970062 true "" "plotxy ticks count-groups"
 
 SLIDER
-19
-317
-216
-350
+18
+201
+238
+234
 heading-noise-range
 heading-noise-range
+0.25
+10
+3.45
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+18
+548
+190
+581
+n-hawks
+n-hawks
 1
 10
 1.0
@@ -433,55 +489,40 @@ NIL
 HORIZONTAL
 
 SLIDER
-20
-432
-192
-465
-n-hawks
-n-hawks
-3
-10
-3.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-20
-392
-192
-425
+18
+508
+190
+541
 hawk-vision
 hawk-vision
 1
 100
-10.0
+15.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-20
-475
-192
-508
+18
+591
+190
+624
 hawk-hunt-speed
 hawk-hunt-speed
 1
 25
-3.0
+4.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-20
-519
-208
-552
+18
+635
+206
+668
 hawk-search-speed
 hawk-search-speed
 1
@@ -493,16 +534,111 @@ NIL
 HORIZONTAL
 
 SLIDER
-21
-565
-193
-598
+19
+681
+191
+714
 time-to-eat
 time-to-eat
 1
 50
 30.0
 1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+23
+483
+173
+513
+Hawk parameters
+12
+0.0
+1
+
+TEXTBOX
+23
+101
+173
+119
+Dove parameters
+12
+0.0
+1
+
+SLIDER
+19
+242
+197
+275
+dove-boost-speed
+dove-boost-speed
+1
+50
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+18
+284
+214
+317
+dove-fear-dir-noise
+dove-fear-dir-noise
+1
+10
+1.5
+0.5
+1
+NIL
+HORIZONTAL
+
+SLIDER
+19
+325
+191
+358
+dove-vision
+dove-vision
+1
+100
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+19
+367
+221
+400
+dove-standard-speed
+dove-standard-speed
+1
+50
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+21
+412
+206
+445
+threat-ignorance
+threat-ignorance
+0.01
+1
+0.3
+0.01
 1
 NIL
 HORIZONTAL
