@@ -2,6 +2,7 @@ globals [
   psi
   c
   hawk-roam-angle
+  max-children
 ]
 
 breed [doves dove]
@@ -13,7 +14,7 @@ patches-own [
 
 doves-own [
   my-area
-
+  n-children
   flock-assigned	
 ]
 
@@ -35,6 +36,7 @@ to setup
     set color blue
     set heading random 360
     set flock-assigned false
+    set n-children 0
     set shape "bird"
   ]
 
@@ -50,6 +52,7 @@ to setup
 
   set psi 0
   set hawk-roam-angle 25
+  set max-children 3
   reset-ticks
 end
 
@@ -69,6 +72,42 @@ to go
     partition-world
   ]
 
+  if ticks mod breeding-period = 0 [
+    breed-doves
+  ]
+
+end
+
+to give-birth [spouse]
+
+  let nx (xcor + [xcor] of spouse) / 2
+  let ny (ycor + [ycor] of spouse) / 2
+
+  hatch 1 [
+    setxy nx ny
+    set color blue
+    set heading random 360
+    set flock-assigned false
+    set n-children 0
+    set shape "bird"
+  ]
+
+end
+
+to breed-doves
+  ask doves [
+    if n-children < max-children[
+      let spouse min-one-of other doves in-radius radius with [n-children < max-children] [distance myself]
+      if spouse != nobody [
+        give-birth spouse
+
+        set n-children n-children + 1
+        ask spouse [
+          set n-children n-children + 1
+        ]
+      ]
+   ]
+  ]
 end
 
 to update-doves
@@ -339,7 +378,7 @@ n-doves
 n-doves
 10
 1000
-194.0
+151.0
 1
 1
 NIL
@@ -474,25 +513,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-18
-548
-190
-581
+20
+649
+192
+682
 n-hawks
 n-hawks
 1
 10
-1.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-18
-508
-190
-541
+20
+609
+192
+642
 hawk-vision
 hawk-vision
 1
@@ -504,10 +543,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-18
-591
-190
-624
+20
+692
+192
+725
 hawk-hunt-speed
 hawk-hunt-speed
 1
@@ -519,10 +558,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-18
-635
-206
-668
+20
+736
+208
+769
 hawk-search-speed
 hawk-search-speed
 1
@@ -534,10 +573,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-681
-191
-714
+22
+782
+194
+815
 time-to-eat
 time-to-eat
 1
@@ -549,10 +588,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-23
-483
-173
-513
+25
+584
+175
+614
 Hawk parameters
 12
 0.0
@@ -622,7 +661,7 @@ dove-standard-speed
 dove-standard-speed
 1
 50
-1.0
+31.0
 1
 1
 NIL
@@ -637,8 +676,23 @@ threat-ignorance
 threat-ignorance
 0.01
 1
-0.3
+0.1
 0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+22
+459
+195
+493
+breeding-period
+breeding-period
+10
+150
+50.0
+1
 1
 NIL
 HORIZONTAL
