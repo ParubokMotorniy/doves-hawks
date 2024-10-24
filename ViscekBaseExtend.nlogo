@@ -1,31 +1,55 @@
 globals [
   psi
   c
+  hawk-roam-angle
 ]
+
+breed [doves dove]
+breed [hawks hawk]
 
 patches-own [
   my-turtle
 ]
 
-turtles-own [
+doves-own [
   my-area
   headings
 
   flock-assigned	
 ]
+
+hawks-own[
+  current-target
+
+  carries-prey
+  eating
+  eating-spot
+]
+
 to setup
   clear-all
 
   ask patches [set pcolor white]
-  create-turtles num [
+  create-doves num [
     setxy random-pxcor random-pycor
     set color blue
     set headings []
     set flock-assigned false
+    set shape "bird"
+  ]
+
+  create-hawks n-hawks[
+    set color red
+    set shape "hawk"
+    set current-target nobody
+    set carries-prey false
+    set eating -1
+    set eating-spot one-of patches
+    setxy random-pxcor random-pycor
   ]
 
   set psi 0
-
+  set hawk-roam-angle 45
   reset-ticks
 end
 
@@ -34,44 +58,108 @@ end
 to go
   tick
 
-  ask turtles [
-    let a turtles in-radius radius
+  ask doves [
+    let a doves in-radius radius
     let theta average-flockmate-heading a
     set heading (theta + (random-float heading-noise-range) - (heading-noise-range / 2) )
   ]
 
-
-  ask turtles [
+  ask doves [
     fd 1
   ]
 
-  set psi ((sum [dx] of turtles) ^ 2 + (sum [cos heading] of turtles)^ 2) ^ 0.5 / (count turtles)
+  seek-and-destroy
 
-  ask patches [
-    set my-turtle [who] of min-one-of turtles [distance myself]
+  if count doves > 0 [
+    set psi ((sum [dx] of doves) ^ 2 + (sum [cos heading] of doves)^ 2) ^ 0.5 / (count doves)
   ]
 
-  define-clusters
-
-  ifelse show-voronoi? [
-    ask patches [
-      set pcolor  my-turtle mod 255
-    ]
-   ][
-    ask patches [
-      set pcolor white
-
-    ]
+  if show-voronoi? [
+    partition-world
   ]
 
 end
 
+to seek-and-destroy
+
+  ask hawks [
+    if-else current-target = nobody and carries-prey = false and eating = -1 [
+      ;find a new prey
+      if any? doves in-radius hawk-vision[
+        set current-target one-of other doves in-radius hawk-vision
+        ask current-target [set color green]
+      ]
+    ][
+      ;the prey ma have dropped out of sight
+      if current-target != nobody and distance current-target > hawk-vision[
+        ask current-target [set color blue]
+        set current-target nobody
+      ]
+    ]
+  ]
+
+  ask hawks[
+    if-else current-target = nobody[
+      if-else carries-prey = false [
+        if-else eating = -1[
+          ;wander around the world in search of prey
+          set heading heading + (random (2 * hawk-roam-angle)) - hawk-roam-angle
+          fd hawk-search-speed
+        ][
+          ;spend some time eating without any motion
+          set eating eating + 1
+          if eating >= time-to-eat [
+            set eating -1
+            set carries-prey false
+            set current-target nobody
+          ]
+        ]
+      ][
+        ;fly to the eating spot
+        set heading towardsxy [pxcor] of eating-spot [pycor] of eating-spot
+        fd hawk-search-speed
+        if distance eating-spot < 3 [
+          set carries-prey false
+          set eating 0
+        ]
+      ]
+    ][
+      ;follow prey
+      set heading towardsxy [xcor] of current-target [ycor] of current-target
+      fd hawk-hunt-speed
+
+      ;catch a dove
+      if distance current-target < 2[
+        ask current-target [die]
+        set eating-spot []
+        set eating-spot one-of patches in-radius 30
+        set carries-prey true
+        set current-target nobody
+      ]
+    ]
+  ]
+
+
+end
+
+to partition-world
+  ask patches [
+    set my-turtle [who] of min-one-of doves [distance myself]
+  ]
+
+  define-clusters
+
+  ask patches [
+      set pcolor  my-turtle mod 255
+  ]
+end
+
 to define-clusters
-  ask turtles [
+  ask doves [
     set my-area count patches with [my-turtle = [who] of myself]
   ]
 
-  set c (count turtles with [my-area < radius * radius * pi]) / (count turtles)
+  set c (count doves with [my-area < radius * radius * pi]) / (count doves)
 end
 
 to-report average-flockmate-heading [flockmates]  ;; turtle procedure
@@ -86,15 +174,15 @@ to-report average-flockmate-heading [flockmates]  ;; turtle procedure
 end
 
 to-report heading-variance
-  let x-var variance [dx] of turtles
-  let y-var variance [dy] of turtles
+  let x-var variance [dx] of doves
+  let y-var variance [dy] of doves
 
   report x-var + y-var
 end
 
 to grow-flock
   set flock-assigned true
-  let neighbours other turtles in-radius flock-size-threshold with [flock-assigned = false]
+  let neighbours other doves in-radius flock-size-threshold with [flock-assigned = false]
 
   ask neighbours
   [
@@ -106,14 +194,14 @@ to grow-flock
 end
 
 to-report count-groups
-  ask turtles
+  ask doves
   [
     set flock-assigned false
   ]
 
 	let n-groups 0
 
-  ask turtles
+  ask doves
   [
     if flock-assigned = false
     [
@@ -124,16 +212,15 @@ to-report count-groups
 
   report n-groups
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
-242
+244
 10
-753
-522
+1065
+832
 -1
 -1
-8.25
+4.045
 1
 10
 1
@@ -143,10 +230,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--30
-30
--30
-30
+-100
+100
+-100
+100
 0
 0
 1
@@ -175,7 +262,7 @@ BUTTON
 50
 89
 83
-NIL
+Go
 go
 T
 1
@@ -196,7 +283,7 @@ num
 num
 0
 1000
-178.0
+57.0
 1
 1
 NIL
@@ -233,10 +320,10 @@ NIL
 HORIZONTAL
 
 PLOT
-803
-17
-1276
-267
+1180
+16
+1653
+266
 global alignment coefficient
 NIL
 NIL
@@ -280,10 +367,10 @@ show-voronoi?
 -1000
 
 PLOT
-805
-285
-1280
-509
+1182
+284
+1657
+508
 Alignment metric
 NIL
 NIL
@@ -313,10 +400,10 @@ NIL
 HORIZONTAL
 
 PLOT
-240
-535
-750
-695
+1184
+524
+1694
+684
 N-flocks
 NIL
 NIL
@@ -337,9 +424,84 @@ SLIDER
 350
 heading-noise-range
 heading-noise-range
-2
+1
 10
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+20
+432
+192
+465
+n-hawks
+n-hawks
+3
+10
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+20
+392
+192
+425
+hawk-vision
+hawk-vision
+1
+100
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+20
+475
+192
+508
+hawk-hunt-speed
+hawk-hunt-speed
+1
+25
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+20
+519
+208
+552
+hawk-search-speed
+hawk-search-speed
+1
+30
 2.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+21
+565
+193
+598
+time-to-eat
+time-to-eat
+1
+50
+30.0
 1
 1
 NIL
@@ -396,6 +558,16 @@ arrow
 true
 0
 Polygon -7500403 true true 150 0 0 150 105 150 105 293 195 293 195 150 300 150
+
+bird
+false
+0
+Polygon -7500403 true true 135 165 90 270 120 300 180 300 210 270 165 165
+Rectangle -7500403 true true 120 105 180 237
+Polygon -7500403 true true 135 105 120 75 105 45 121 6 167 8 207 25 257 46 180 75 165 105
+Circle -16777216 true false 128 21 42
+Polygon -7500403 true true 163 116 194 92 212 86 230 86 250 90 265 98 279 111 290 126 296 143 298 158 298 166 296 183 286 204 272 219 259 227 235 240 241 223 250 207 251 192 245 180 232 168 216 162 200 162 186 166 175 173 171 180
+Polygon -7500403 true true 137 116 106 92 88 86 70 86 50 90 35 98 21 111 10 126 4 143 2 158 2 166 4 183 14 204 28 219 41 227 65 240 59 223 50 207 49 192 55 180 68 168 84 162 100 162 114 166 125 173 129 180
 
 box
 false
@@ -523,6 +695,19 @@ Circle -7500403 true true 96 51 108
 Circle -16777216 true false 113 68 74
 Polygon -10899396 true false 189 233 219 188 249 173 279 188 234 218
 Polygon -10899396 true false 180 255 150 210 105 210 75 240 135 240
+
+hawk
+true
+0
+Polygon -7500403 true true 151 170 136 170 123 229 143 244 156 244 179 229 166 170
+Polygon -16777216 true false 152 154 137 154 125 213 140 229 159 229 179 214 167 154
+Polygon -7500403 true true 151 140 136 140 126 202 139 214 159 214 176 200 166 140
+Polygon -16777216 true false 151 125 134 124 128 188 140 198 161 197 174 188 166 125
+Polygon -7500403 true true 152 86 227 72 286 97 272 101 294 117 276 118 287 131 270 131 278 141 264 138 267 145 228 150 153 147
+Polygon -7500403 true true 160 74 159 61 149 54 130 53 139 62 133 81 127 113 129 149 134 177 150 206 168 179 172 147 169 111
+Circle -16777216 true false 144 55 7
+Polygon -16777216 true false 129 53 135 58 139 54
+Polygon -7500403 true true 148 86 73 72 14 97 28 101 6 117 24 118 13 131 30 131 22 141 36 138 33 145 72 150 147 147
 
 house
 false
