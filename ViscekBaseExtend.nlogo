@@ -390,7 +390,7 @@ n-doves
 n-doves
 10
 1000
-215.0
+258.0
 1
 1
 NIL
@@ -485,7 +485,7 @@ flock-size-threshold
 flock-size-threshold
 1
 100
-4.0
+5.0
 1
 1
 NIL
@@ -518,7 +518,7 @@ heading-noise-range
 heading-noise-range
 0.25
 10
-3.45
+2.22
 0.01
 1
 NIL
@@ -563,7 +563,7 @@ hawk-hunt-speed
 hawk-hunt-speed
 1
 25
-4.0
+10.0
 1
 1
 NIL
@@ -578,7 +578,7 @@ hawk-search-speed
 hawk-search-speed
 1
 30
-2.0
+4.0
 1
 1
 NIL
@@ -593,7 +593,7 @@ time-to-eat
 time-to-eat
 1
 50
-5.0
+10.0
 1
 1
 NIL
@@ -643,7 +643,7 @@ dove-fear-dir-noise
 dove-fear-dir-noise
 1
 10
-1.5
+5.0
 0.5
 1
 NIL
@@ -673,7 +673,7 @@ dove-standard-speed
 dove-standard-speed
 1
 50
-7.0
+6.0
 1
 1
 NIL
