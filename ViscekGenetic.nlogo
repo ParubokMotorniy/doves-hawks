@@ -434,8 +434,8 @@ HORIZONTAL
 PLOT
 1604
 18
-2077
-268
+2078
+245
 global alignment coefficient
 NIL
 NIL
@@ -468,10 +468,10 @@ NIL
 1
 
 SWITCH
-1612
-706
-1762
-739
+1607
+633
+1757
+666
 show-voronoi?
 show-voronoi?
 1
@@ -479,10 +479,10 @@ show-voronoi?
 -1000
 
 PLOT
-1606
-286
-2081
-510
+1607
+248
+2083
+465
 Alignment metric
 NIL
 NIL
@@ -497,10 +497,10 @@ PENS
 "Pen 1" 1.0 0 -5509967 true "" "plotxy ticks heading-variance"
 
 SLIDER
-1613
-743
-1783
-776
+1766
+634
+1936
+667
 flock-size-threshold
 flock-size-threshold
 1
@@ -512,10 +512,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1608
-526
-2118
-686
+1602
+468
+2086
+628
 N-flocks
 NIL
 NIL
