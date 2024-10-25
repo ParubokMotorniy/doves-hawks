@@ -33,7 +33,7 @@ to setup
 
   create-doves n-doves [
     setxy random-pxcor random-pycor
-    set color blue
+    set color one-of [blue green yellow pink]
     set heading random 360
     set flock-assigned false
     set n-children 0
@@ -43,6 +43,7 @@ to setup
   create-hawks n-hawks[
     set color red
     set shape "hawk"
+    set size 2.5
     set current-target nobody
     set carries-prey false
     set eating -1
@@ -83,9 +84,12 @@ to give-birth [spouse]
   let nx (xcor + [xcor] of spouse) / 2
   let ny (ycor + [ycor] of spouse) / 2
 
+  let self-color color
+  let other-color [color] of spouse
+
   hatch 1 [
     setxy nx ny
-    set color blue
+    set color one-of (list self-color other-color)
     set heading random 360
     set flock-assigned false
     set n-children 0
@@ -378,7 +382,7 @@ n-doves
 n-doves
 10
 1000
-151.0
+215.0
 1
 1
 NIL
@@ -521,7 +525,7 @@ n-hawks
 n-hawks
 1
 10
-5.0
+3.0
 1
 1
 NIL
@@ -581,7 +585,7 @@ time-to-eat
 time-to-eat
 1
 50
-30.0
+5.0
 1
 1
 NIL
@@ -646,7 +650,7 @@ dove-vision
 dove-vision
 1
 100
-5.0
+10.0
 1
 1
 NIL
@@ -661,7 +665,7 @@ dove-standard-speed
 dove-standard-speed
 1
 50
-31.0
+7.0
 1
 1
 NIL
@@ -686,7 +690,7 @@ SLIDER
 22
 459
 195
-493
+492
 breeding-period
 breeding-period
 10
