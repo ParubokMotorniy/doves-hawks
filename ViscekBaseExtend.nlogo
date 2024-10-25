@@ -174,12 +174,10 @@ to seek-and-destroy
       ;find a new prey
       if any? doves in-radius hawk-vision[
         set current-target one-of other doves in-radius hawk-vision
-        ask current-target [set color green]
       ]
     ][
       ;the prey ma have dropped out of sight. Unlock it.
       if current-target != nobody and distance current-target > hawk-vision[
-        ask current-target [set color blue]
         set current-target nobody
       ]
     ]
@@ -224,7 +222,6 @@ to seek-and-destroy
       ;catch a dove
       let closest-dove min-one-of doves in-radius 2 [distance myself]
       if closest-dove != nobody [
-        ask current-target [set color blue]
         ask closest-dove [die]
         set eating-spot []
         set eating-spot one-of patches in-radius 30
@@ -518,7 +515,7 @@ heading-noise-range
 heading-noise-range
 0.25
 10
-2.22
+1.8
 0.01
 1
 NIL
@@ -563,7 +560,7 @@ hawk-hunt-speed
 hawk-hunt-speed
 1
 25
-10.0
+5.0
 1
 1
 NIL
@@ -578,7 +575,7 @@ hawk-search-speed
 hawk-search-speed
 1
 30
-4.0
+2.0
 1
 1
 NIL
@@ -628,7 +625,7 @@ dove-boost-speed
 dove-boost-speed
 1
 50
-3.0
+1.0
 1
 1
 NIL
@@ -643,7 +640,7 @@ dove-fear-dir-noise
 dove-fear-dir-noise
 1
 10
-5.0
+2.5
 0.5
 1
 NIL
@@ -673,7 +670,7 @@ dove-standard-speed
 dove-standard-speed
 1
 50
-6.0
+3.0
 1
 1
 NIL
