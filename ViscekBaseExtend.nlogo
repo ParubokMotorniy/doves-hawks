@@ -73,8 +73,16 @@ to go
     partition-world
   ]
 
-  if ticks mod breeding-period = 0 [
-    breed-doves
+  ifelse birth-on = "breeding-period" [
+    if ticks mod breeding-period = 0 [
+      breed-doves
+    ]
+  ] [
+    if birth-on = "less-than-initial" [
+      if count doves < n-doves [
+        breed-doves
+      ]
+    ]
   ]
 
 end
@@ -700,6 +708,16 @@ breeding-period
 1
 NIL
 HORIZONTAL
+
+CHOOSER
+28
+508
+180
+554
+birth-on
+birth-on
+"breeding-period" "less-than-initial"
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
