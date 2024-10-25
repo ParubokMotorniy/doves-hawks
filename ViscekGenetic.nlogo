@@ -402,10 +402,10 @@ NIL
 1
 
 SLIDER
-19
-127
-191
-160
+3
+129
+175
+162
 n-doves
 n-doves
 10
@@ -417,10 +417,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-160
-191
-193
+3
+162
+205
+196
 max-initial-friendly-radius
 max-initial-friendly-radius
 0
@@ -530,10 +530,10 @@ PENS
 "Pen 1" 1.0 0 -9970062 true "" "plotxy ticks count-groups"
 
 SLIDER
-19
-202
-258
-236
+6
+616
+245
+649
 max-initial-heading-noise-range
 max-initial-heading-noise-range
 0.25
@@ -545,10 +545,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-20
-649
-192
-682
+8
+892
+180
+925
 n-hawks
 n-hawks
 1
@@ -560,10 +560,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-20
-609
-192
-642
+8
+852
+180
+885
 hawk-vision
 hawk-vision
 1
@@ -575,10 +575,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-20
-692
-192
-725
+203
+817
+375
+850
 hawk-hunt-speed
 hawk-hunt-speed
 1
@@ -590,10 +590,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-20
-736
-208
-769
+202
+854
+390
+887
 hawk-search-speed
 hawk-search-speed
 1
@@ -605,10 +605,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-22
-782
-194
-815
+202
+895
+374
+928
 time-to-eat
 time-to-eat
 1
@@ -620,10 +620,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-25
-584
-175
-614
+14
+826
+164
+856
 Hawk parameters
 12
 0.0
@@ -640,10 +640,10 @@ Dove parameters
 1
 
 SLIDER
-19
-242
-232
-276
+4
+337
+217
+370
 max-initial-dove-boost-speed
 max-initial-dove-boost-speed
 1
@@ -655,10 +655,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-18
-284
-260
-318
+7
+652
+249
+685
 max-initial-dove-fear-dir-noise
 max-initial-dove-fear-dir-noise
 1
@@ -670,10 +670,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-325
-254
-359
+4
+196
+239
+229
 max-initial-dove-enemy-vision
 max-initial-dove-enemy-vision
 1
@@ -685,25 +685,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-367
-254
-401
+4
+370
+239
+403
 max-initial-dove-standard-speed
 max-initial-dove-standard-speed
 1
 50
-3.0
+4.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-21
-412
-251
-446
+2
+524
+232
+557
 max-initial-threat-ignorance
 max-initial-threat-ignorance
 0.01
@@ -715,10 +715,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-22
-459
-195
-492
+487
+829
+660
+862
 breeding-period
 breeding-period
 10
@@ -730,14 +730,194 @@ NIL
 HORIZONTAL
 
 CHOOSER
-28
-508
-180
-553
+494
+878
+646
+923
 birth-on
 birth-on
 "breeding-period" "less-than-initial"
 1
+
+PLOT
+246
+65
+670
+280
+radia
+NIL
+NIL
+0.0
+9.0
+0.0
+10.0
+true
+true
+"set-current-plot-pen \"enemy-vision\"\nset-plot-pen-interval 0.2\nset-current-plot-pen \"friendly-radius\"\nset-plot-pen-interval 0.2" ""
+PENS
+"friendly-radius" 1.0 0 -13210332 true "" "histogram [genetic-friendly-radius] of doves"
+"enemy-vision" 1.0 0 -8053223 true "" "histogram [genetic-dove-enemy-vision] of doves"
+
+PLOT
+245
+283
+671
+495
+speed
+NIL
+NIL
+0.0
+5.0
+0.0
+10.0
+true
+true
+"set-current-plot-pen \"standard-speed\"\nset-plot-pen-interval 0.2\nset-current-plot-pen \"boost-speed\"\nset-plot-pen-interval 0.1" ""
+PENS
+"standard-speed" 1.0 0 -15040220 true "" "histogram [genetic-dove-standard-speed] of doves"
+"boost-speed" 1.0 0 -8053223 true "" "histogram [genetic-dove-boost-speed] of doves"
+
+PLOT
+244
+494
+669
+614
+threat-ignorance
+NIL
+NIL
+0.0
+0.5
+0.0
+10.0
+true
+false
+"set-current-plot-pen \"default\"\nset-plot-pen-interval 0.015" ""
+PENS
+"default" 1.0 0 -12895429 true "" "histogram [genetic-threat-ignorance] of doves"
+
+PLOT
+245
+613
+669
+817
+noise
+NIL
+NIL
+0.0
+4.0
+0.0
+10.0
+true
+true
+"set-current-plot-pen \"heading-noise\"\nset-plot-pen-interval 0.2\nset-current-plot-pen \"fear-noise\"\nset-plot-pen-interval 0.2" ""
+PENS
+"heading-noise" 1.0 0 -13210332 true "" "histogram [genetic-heading-noise-range] of doves"
+"fear-noise" 1.0 0 -5298144 true "" "histogram [genetic-dove-fear-dir-noise] of doves"
+
+SLIDER
+19
+228
+239
+262
+friendly-radius-mutation-rate
+friendly-radius-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+19
+263
+241
+297
+enemy-vision-mutation-rate
+enemy-vision-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+13
+405
+240
+439
+boost-speed-mutation-rate
+boost-speed-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+14
+440
+242
+474
+standard-speed-mutation-rate
+standard-speed-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+13
+559
+245
+593
+threat-ignorance-mutation-rate
+threat-ignorance-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+18
+689
+245
+723
+heading-noise-mutation-rate
+heading-noise-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+19
+724
+245
+758
+fear-dir-noise-mutation-rate
+fear-dir-noise-mutation-rate
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
