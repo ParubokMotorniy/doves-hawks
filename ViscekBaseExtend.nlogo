@@ -109,7 +109,7 @@ end
 to breed-doves
   ask doves [
     if n-children < max-children[
-      let spouse min-one-of other doves in-radius radius with [n-children < max-children] [distance myself]
+      let spouse min-one-of other doves in-radius friendly-radius with [n-children < max-children] [distance myself]
       if spouse != nobody [
         give-birth spouse
 
@@ -127,15 +127,15 @@ to update-doves
   ask doves [
     ;compute the direction of flock
     let theta heading
-    let a doves in-radius radius
+    let a doves in-radius friendly-radius
     if a != nobody [
       set theta average-flockmate-heading a
     ]
     let in-flock-heading add-noise-to-heading heading-noise-range theta
 
-    if-else any? hawks in-radius dove-vision[
+    if-else any? hawks in-radius dove-enemy-vision[
       ;take into accoutn the presence of hawks and adjust the direction
-      let threats hawks in-radius dove-vision
+      let threats hawks in-radius dove-enemy-vision
       let avg-hawk-direction optimal-hawk-avoiding-heading threats
       let fear-heading add-noise-to-heading dove-fear-dir-noise avg-hawk-direction
 
@@ -251,7 +251,7 @@ to define-clusters
     set my-area count patches with [my-turtle = [who] of myself]
   ]
 
-  set c (count doves with [my-area < radius * radius * pi]) / (count doves)
+  set c (count doves with [my-area < friendly-radius * friendly-radius * pi]) / (count doves)
 end
 
 to-report average-flockmate-heading [flockmates]  ;; turtle procedure
@@ -398,8 +398,8 @@ SLIDER
 160
 191
 193
-radius
-radius
+friendly-radius
+friendly-radius
 0
 20
 2.18
@@ -651,8 +651,8 @@ SLIDER
 325
 191
 358
-dove-vision
-dove-vision
+dove-enemy-vision
+dove-enemy-vision
 1
 100
 10.0
