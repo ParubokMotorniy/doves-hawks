@@ -142,7 +142,7 @@ to update-doves
       let optimal-heading (((in-flock-heading - 180) * threat-ignorance + (fear-heading - 180) * (1 - threat-ignorance)) + 180)
       set heading optimal-heading
 
-      fd dove-boost-speed
+      fd dove-boost-speed + dove-standard-speed
     ][
       ;stay with the flock
       set heading in-flock-heading
