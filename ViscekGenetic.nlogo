@@ -3,6 +3,7 @@ globals [
   c
   hawk-roam-angle
   max-children
+  deaths
 ]
 
 breed [doves dove]
@@ -75,7 +76,6 @@ end
 
 to go
   tick
-
   update-doves
 
   seek-and-destroy
@@ -100,6 +100,7 @@ to go
     ]
   ]
 
+
 end
 
 to give-birth [spouse]
@@ -107,24 +108,67 @@ to give-birth [spouse]
   let nx (xcor + [xcor] of spouse) / 2
   let ny (ycor + [ycor] of spouse) / 2
 
+  let gfr-o [genetic-friendly-radius] of spouse
+  let ghnr-o [genetic-heading-noise-range] of spouse
+  let gdss-o [genetic-dove-standard-speed] of spouse
+  let gdev-o [genetic-dove-enemy-vision] of spouse
+  let gdbs-o [genetic-dove-boost-speed] of spouse
+  let gdfdn-o [genetic-dove-fear-dir-noise] of spouse
+  let gti-o [genetic-threat-ignorance] of spouse
+
+  let gfr-s genetic-friendly-radius
+  let ghnr-s genetic-heading-noise-range
+  let gdss-s genetic-dove-standard-speed
+  let gdev-s genetic-dove-enemy-vision
+  let gdbs-s genetic-dove-boost-speed
+  let gdfdn-s genetic-dove-fear-dir-noise
+  let gti-s genetic-threat-ignorance
+
   let self-color color
   let other-color [color] of spouse
 
   hatch 1 [
     setxy nx ny
-    set color one-of (list self-color other-color)
+    set color ((other-color + self-color) / 2) + random 10 - 5
     set heading random 360
     set flock-assigned false
     set n-children 0
     set shape "bird"
 
-    set genetic-friendly-radius random-float max-initial-friendly-radius
-    set genetic-heading-noise-range random-float max-initial-heading-noise-range
-    set genetic-dove-standard-speed random-float max-initial-dove-standard-speed
-    set genetic-dove-enemy-vision random-float max-initial-dove-enemy-vision
-    set genetic-dove-boost-speed random-float max-initial-dove-boost-speed
-    set genetic-dove-fear-dir-noise random-float max-initial-dove-fear-dir-noise
-    set genetic-threat-ignorance random-float max-initial-threat-ignorance
+    ;set genetic-friendly-radius (gfr-o + gfr-s) * (0.4 + random-float 0.2)
+    ;set genetic-heading-noise-range (ghnr-o + ghnr-s)* (0.4 + random-float 0.2)
+    ;set genetic-dove-standard-speed (gdss-o + gdss-s)* (0.4 + random-float 0.2)
+    ;set genetic-dove-enemy-vision (gdev-o + gdev-s) * (0.4 + random-float 0.2)
+    ;set genetic-dove-boost-speed (gdbs-s + gdbs-o) * (0.4 + random-float 0.2)
+    ;set genetic-dove-fear-dir-noise  (gdfdn-s + gdfdn-o)* (0.4 + random-float 0.2)
+    ;set genetic-threat-ignorance  (gti-s + gti-o)* (0.4 + random-float 0.2)
+
+    let gfr-n (gfr-o + gfr-s) / max-initial-friendly-radius + random-float 0.05 - 0.025
+    let ghnr-n (ghnr-o + ghnr-s) / max-initial-heading-noise-range + random-float 0.05 - 0.025
+    let gdss-n (gdss-o + gdss-s) / max-initial-dove-standard-speed + random-float 0.05 - 0.025
+    let gdev-n (gdev-o + gdev-s) / max-initial-dove-enemy-vision + random-float 0.05 - 0.025
+    let gdbs-n (gdbs-o + gdbs-s) / max-initial-dove-boost-speed + random-float 0.05 - 0.025
+    let gdfdn-n (gdfdn-o + gdfdn-s) / max-initial-dove-fear-dir-noise + random-float 0.05 - 0.025
+    let gti-n (gti-o + gti-s) / max-initial-threat-ignorance + random-float 0.05 - 0.025
+
+    let vec-length sqrt(gfr-n ^ 2 + ghnr-n ^ 2 + gdss-n ^ 2 + gdev-n ^ 2 + gdbs-n ^ 2 + gdfdn-n ^ 2 + gti-n ^ 2)
+
+    set gfr-n (gfr-n / vec-length)
+    set ghnr-n (ghnr-n / vec-length)
+    set gdss-n (gdss-n / vec-length)
+    set gdev-n (gdev-n / vec-length)
+    set gdbs-n (gdbs-n / vec-length)
+    set gdfdn-n (gdfdn-n / vec-length)
+    set gti-n (gti-n / vec-length)
+
+    set genetic-friendly-radius gfr-n * max-initial-friendly-radius
+    set genetic-heading-noise-range ghnr-n * max-initial-heading-noise-range
+    set genetic-dove-standard-speed gdss-n * max-initial-dove-standard-speed
+    set genetic-dove-enemy-vision gdev-n * max-initial-dove-enemy-vision
+    set genetic-dove-boost-speed gdbs-n * max-initial-dove-boost-speed
+    set genetic-dove-fear-dir-noise gdfdn-n * max-initial-dove-fear-dir-noise
+    set genetic-threat-ignorance gti-n * max-initial-threat-ignorance
+
   ]
 
 end
@@ -224,6 +268,7 @@ to seek-and-destroy
             set carries-prey false
             set current-target nobody
 
+
           ]
         ]
       ][
@@ -250,6 +295,8 @@ to seek-and-destroy
         set eating-spot one-of patches in-radius 30
         set carries-prey true
         set current-target nobody
+        set deaths (deaths + 1)
+
       ]
     ]
   ]
@@ -265,7 +312,8 @@ to partition-world
   define-clusters
 
   ask patches [
-      set pcolor  my-turtle mod 255
+
+      set pcolor my-turtle mod 255
   ]
 end
 
@@ -420,7 +468,7 @@ SLIDER
 3
 162
 205
-196
+195
 max-initial-friendly-radius
 max-initial-friendly-radius
 0
@@ -538,7 +586,7 @@ max-initial-heading-noise-range
 max-initial-heading-noise-range
 0.25
 10
-1.8
+2.17
 0.01
 1
 NIL
@@ -568,7 +616,7 @@ hawk-vision
 hawk-vision
 1
 100
-15.0
+77.0
 1
 1
 NIL
@@ -708,7 +756,7 @@ max-initial-threat-ignorance
 max-initial-threat-ignorance
 0.01
 1
-0.1
+0.01
 0.01
 1
 NIL
@@ -818,7 +866,7 @@ SLIDER
 19
 228
 239
-262
+261
 friendly-radius-mutation-rate
 friendly-radius-mutation-rate
 0
@@ -833,7 +881,7 @@ SLIDER
 19
 263
 241
-297
+296
 enemy-vision-mutation-rate
 enemy-vision-mutation-rate
 0
@@ -845,10 +893,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-13
-405
-240
-439
+4
+402
+231
+435
 boost-speed-mutation-rate
 boost-speed-mutation-rate
 0
@@ -860,25 +908,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-440
-242
-474
+5
+437
+233
+470
 standard-speed-mutation-rate
 standard-speed-mutation-rate
 0
 1
-0.1
+0.65
 0.05
 1
 NIL
 HORIZONTAL
 
 SLIDER
-13
-559
-245
-593
+2
+556
+234
+589
 threat-ignorance-mutation-rate
 threat-ignorance-mutation-rate
 0
@@ -890,10 +938,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-18
-689
-245
-723
+6
+684
+233
+717
 heading-noise-mutation-rate
 heading-noise-mutation-rate
 0
@@ -905,10 +953,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-724
-245
-758
+7
+719
+233
+752
 fear-dir-noise-mutation-rate
 fear-dir-noise-mutation-rate
 0
@@ -918,6 +966,24 @@ fear-dir-noise-mutation-rate
 1
 NIL
 HORIZONTAL
+
+PLOT
+1604
+670
+2108
+958
+plot 1
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot deaths"
 
 @#$#@#$#@
 ## WHAT IS IT?
