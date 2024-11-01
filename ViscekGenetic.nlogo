@@ -143,13 +143,13 @@ to give-birth [spouse]
     ;set genetic-dove-fear-dir-noise  (gdfdn-s + gdfdn-o)* (0.4 + random-float 0.2)
     ;set genetic-threat-ignorance  (gti-s + gti-o)* (0.4 + random-float 0.2)
 
-    let gfr-n (gfr-o + gfr-s) / max-initial-friendly-radius + random-float 0.05 - 0.025
-    let ghnr-n (ghnr-o + ghnr-s) / max-initial-heading-noise-range + random-float 0.05 - 0.025
-    let gdss-n (gdss-o + gdss-s) / max-initial-dove-standard-speed + random-float 0.05 - 0.025
-    let gdev-n (gdev-o + gdev-s) / max-initial-dove-enemy-vision + random-float 0.05 - 0.025
-    let gdbs-n (gdbs-o + gdbs-s) / max-initial-dove-boost-speed + random-float 0.05 - 0.025
-    let gdfdn-n (gdfdn-o + gdfdn-s) / max-initial-dove-fear-dir-noise + random-float 0.05 - 0.025
-    let gti-n (gti-o + gti-s) / max-initial-threat-ignorance + random-float 0.05 - 0.025
+    let gfr-n (gfr-o + gfr-s) / max-initial-friendly-radius + random-float ma
+    let ghnr-n (ghnr-o + ghnr-s) / max-initial-heading-noise-range + random-float ma
+    let gdss-n (gdss-o + gdss-s) / max-initial-dove-standard-speed + random-float ma
+    let gdev-n (gdev-o + gdev-s) / max-initial-dove-enemy-vision + random-float ma
+    let gdbs-n (gdbs-o + gdbs-s) / max-initial-dove-boost-speed + random-float ma
+    let gdfdn-n (gdfdn-o + gdfdn-s) / max-initial-dove-fear-dir-noise + random-float ma
+    let gti-n (gti-o + gti-s) / max-initial-threat-ignorance + random-float ma
 
     let vec-length sqrt(gfr-n ^ 2 + ghnr-n ^ 2 + gdss-n ^ 2 + gdev-n ^ 2 + gdbs-n ^ 2 + gdfdn-n ^ 2 + gti-n ^ 2)
 
@@ -473,7 +473,7 @@ max-initial-friendly-radius
 max-initial-friendly-radius
 0
 20
-2.18
+10.37
 0.01
 1
 NIL
@@ -631,7 +631,7 @@ hawk-hunt-speed
 hawk-hunt-speed
 1
 25
-5.0
+1.0
 1
 1
 NIL
@@ -726,7 +726,7 @@ max-initial-dove-enemy-vision
 max-initial-dove-enemy-vision
 1
 100
-10.0
+12.0
 1
 1
 NIL
@@ -803,8 +803,8 @@ true
 true
 "set-current-plot-pen \"enemy-vision\"\nset-plot-pen-interval 0.2\nset-current-plot-pen \"friendly-radius\"\nset-plot-pen-interval 0.2" ""
 PENS
-"friendly-radius" 1.0 0 -13210332 true "" "histogram [genetic-friendly-radius] of doves"
-"enemy-vision" 1.0 0 -8053223 true "" "histogram [genetic-dove-enemy-vision] of doves"
+"friendly-radius" 1.0 0 -13210332 true "" "plot (sum [genetic-friendly-radius] of doves)/ count doves"
+"enemy-vision" 1.0 0 -8053223 true "" "plot (sum [genetic-dove-enemy-vision] of doves) / count doves"
 
 PLOT
 245
@@ -822,8 +822,8 @@ true
 true
 "set-current-plot-pen \"standard-speed\"\nset-plot-pen-interval 0.2\nset-current-plot-pen \"boost-speed\"\nset-plot-pen-interval 0.1" ""
 PENS
-"standard-speed" 1.0 0 -15040220 true "" "histogram [genetic-dove-standard-speed] of doves"
-"boost-speed" 1.0 0 -8053223 true "" "histogram [genetic-dove-boost-speed] of doves"
+"standard-speed" 1.0 0 -15040220 true "" "plot (sum [genetic-dove-standard-speed] of doves) / count doves"
+"boost-speed" 1.0 0 -8053223 true "" "plot (sum [genetic-dove-boost-speed] of doves) / count doves"
 
 PLOT
 244
@@ -871,7 +871,7 @@ friendly-radius-mutation-rate
 friendly-radius-mutation-rate
 0
 1
-0.1
+0.15
 0.05
 1
 NIL
@@ -984,6 +984,39 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot deaths"
+
+SLIDER
+16
+297
+189
+331
+ma
+ma
+0
+1
+0.3
+0.01
+1
+NIL
+HORIZONTAL
+
+PLOT
+2093
+479
+2293
+629
+plot 2
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
 
 @#$#@#$#@
 ## WHAT IS IT?
