@@ -135,40 +135,41 @@ to give-birth [spouse]
     set n-children 0
     set shape "bird"
 
-    ;set genetic-friendly-radius (gfr-o + gfr-s) * (0.4 + random-float 0.2)
-    ;set genetic-heading-noise-range (ghnr-o + ghnr-s)* (0.4 + random-float 0.2)
-    ;set genetic-dove-standard-speed (gdss-o + gdss-s)* (0.4 + random-float 0.2)
-    ;set genetic-dove-enemy-vision (gdev-o + gdev-s) * (0.4 + random-float 0.2)
-    ;set genetic-dove-boost-speed (gdbs-s + gdbs-o) * (0.4 + random-float 0.2)
-    ;set genetic-dove-fear-dir-noise  (gdfdn-s + gdfdn-o)* (0.4 + random-float 0.2)
-    ;set genetic-threat-ignorance  (gti-s + gti-o)* (0.4 + random-float 0.2)
+    ifelse evolution-type = "superdoves" [
+        set genetic-friendly-radius (gfr-o + gfr-s) * (0.4 + random-float 0.2)
+        set genetic-heading-noise-range (ghnr-o + ghnr-s)* (0.4 + random-float 0.2)
+        set genetic-dove-standard-speed (gdss-o + gdss-s)* (0.4 + random-float 0.2)
+        set genetic-dove-enemy-vision (gdev-o + gdev-s) * (0.4 + random-float 0.2)
+        set genetic-dove-boost-speed (gdbs-s + gdbs-o) * (0.4 + random-float 0.2)
+        set genetic-dove-fear-dir-noise  (gdfdn-s + gdfdn-o)* (0.4 + random-float 0.2)
+        set genetic-threat-ignorance  (gti-s + gti-o)* (0.4 + random-float 0.2)
+    ] [
+        let gfr-n (gfr-o + gfr-s) / max-initial-friendly-radius + random-float ma
+        let ghnr-n (ghnr-o + ghnr-s) / max-initial-heading-noise-range + random-float ma
+        let gdss-n (gdss-o + gdss-s) / max-initial-dove-standard-speed + random-float ma
+        let gdev-n (gdev-o + gdev-s) / max-initial-dove-enemy-vision + random-float ma
+        let gdbs-n (gdbs-o + gdbs-s) / max-initial-dove-boost-speed + random-float ma
+        let gdfdn-n (gdfdn-o + gdfdn-s) / max-initial-dove-fear-dir-noise + random-float ma
+        let gti-n (gti-o + gti-s) / max-initial-threat-ignorance + random-float ma
 
-    let gfr-n (gfr-o + gfr-s) / max-initial-friendly-radius + random-float ma
-    let ghnr-n (ghnr-o + ghnr-s) / max-initial-heading-noise-range + random-float ma
-    let gdss-n (gdss-o + gdss-s) / max-initial-dove-standard-speed + random-float ma
-    let gdev-n (gdev-o + gdev-s) / max-initial-dove-enemy-vision + random-float ma
-    let gdbs-n (gdbs-o + gdbs-s) / max-initial-dove-boost-speed + random-float ma
-    let gdfdn-n (gdfdn-o + gdfdn-s) / max-initial-dove-fear-dir-noise + random-float ma
-    let gti-n (gti-o + gti-s) / max-initial-threat-ignorance + random-float ma
+        let vec-length sqrt(gfr-n ^ 2 + ghnr-n ^ 2 + gdss-n ^ 2 + gdev-n ^ 2 + gdbs-n ^ 2 + gdfdn-n ^ 2 + gti-n ^ 2)
 
-    let vec-length sqrt(gfr-n ^ 2 + ghnr-n ^ 2 + gdss-n ^ 2 + gdev-n ^ 2 + gdbs-n ^ 2 + gdfdn-n ^ 2 + gti-n ^ 2)
+        set gfr-n (gfr-n / vec-length)
+        set ghnr-n (ghnr-n / vec-length)
+        set gdss-n (gdss-n / vec-length)
+        set gdev-n (gdev-n / vec-length)
+        set gdbs-n (gdbs-n / vec-length)
+        set gdfdn-n (gdfdn-n / vec-length)
+        set gti-n (gti-n / vec-length)
 
-    set gfr-n (gfr-n / vec-length)
-    set ghnr-n (ghnr-n / vec-length)
-    set gdss-n (gdss-n / vec-length)
-    set gdev-n (gdev-n / vec-length)
-    set gdbs-n (gdbs-n / vec-length)
-    set gdfdn-n (gdfdn-n / vec-length)
-    set gti-n (gti-n / vec-length)
-
-    set genetic-friendly-radius gfr-n * max-initial-friendly-radius
-    set genetic-heading-noise-range ghnr-n * max-initial-heading-noise-range
-    set genetic-dove-standard-speed gdss-n * max-initial-dove-standard-speed
-    set genetic-dove-enemy-vision gdev-n * max-initial-dove-enemy-vision
-    set genetic-dove-boost-speed gdbs-n * max-initial-dove-boost-speed
-    set genetic-dove-fear-dir-noise gdfdn-n * max-initial-dove-fear-dir-noise
-    set genetic-threat-ignorance gti-n * max-initial-threat-ignorance
-
+        set genetic-friendly-radius gfr-n * max-initial-friendly-radius
+        set genetic-heading-noise-range ghnr-n * max-initial-heading-noise-range
+        set genetic-dove-standard-speed gdss-n * max-initial-dove-standard-speed
+        set genetic-dove-enemy-vision gdev-n * max-initial-dove-enemy-vision
+        set genetic-dove-boost-speed gdbs-n * max-initial-dove-boost-speed
+        set genetic-dove-fear-dir-noise gdfdn-n * max-initial-dove-fear-dir-noise
+        set genetic-threat-ignorance gti-n * max-initial-threat-ignorance
+    ]
   ]
 
 end
@@ -631,7 +632,7 @@ hawk-hunt-speed
 hawk-hunt-speed
 1
 25
-1.0
+5.0
 1
 1
 NIL
@@ -646,7 +647,7 @@ hawk-search-speed
 hawk-search-speed
 1
 30
-2.0
+4.0
 1
 1
 NIL
@@ -661,7 +662,7 @@ time-to-eat
 time-to-eat
 1
 50
-10.0
+1.0
 1
 1
 NIL
@@ -771,7 +772,7 @@ breeding-period
 breeding-period
 10
 150
-50.0
+10.0
 1
 1
 NIL
@@ -989,7 +990,7 @@ SLIDER
 16
 297
 189
-331
+330
 ma
 ma
 0
@@ -1017,6 +1018,16 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot count turtles"
+
+CHOOSER
+505
+947
+643
+992
+evolution-type
+evolution-type
+"bounded" "superdoves"
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
