@@ -387,7 +387,7 @@ n-doves
 n-doves
 10
 1000
-258.0
+100.0
 1
 1
 NIL
@@ -402,7 +402,7 @@ friendly-radius
 friendly-radius
 0
 20
-2.18
+20.0
 0.01
 1
 NIL
@@ -447,8 +447,8 @@ NIL
 SWITCH
 1184
 695
-1334
-728
+1318
+729
 show-voronoi?
 show-voronoi?
 1
@@ -476,13 +476,13 @@ PENS
 SLIDER
 1185
 732
-1355
-765
+1315
+766
 flock-size-threshold
 flock-size-threshold
 1
 100
-5.0
+16.0
 1
 1
 NIL
@@ -515,7 +515,7 @@ heading-noise-range
 heading-noise-range
 0.25
 10
-1.8
+10.0
 0.01
 1
 NIL
@@ -528,9 +528,9 @@ SLIDER
 682
 n-hawks
 n-hawks
-1
+0
 10
-3.0
+0.0
 1
 1
 NIL
@@ -640,7 +640,7 @@ dove-fear-dir-noise
 dove-fear-dir-noise
 1
 10
-2.5
+1.0
 0.5
 1
 NIL
@@ -655,7 +655,7 @@ dove-enemy-vision
 dove-enemy-vision
 1
 100
-10.0
+1.0
 1
 1
 NIL
@@ -685,7 +685,7 @@ threat-ignorance
 threat-ignorance
 0.01
 1
-0.1
+1.0
 0.01
 1
 NIL
@@ -710,11 +710,32 @@ CHOOSER
 28
 508
 180
-554
+553
 birth-on
 birth-on
 "breeding-period" "less-than-initial"
 1
+
+PLOT
+1317
+690
+1731
+970
+Population by color
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -1184463 true "" "plot count doves with [color = yellow]"
+"pen-1" 1.0 0 -13345367 true "" "plot count doves with [color = blue]"
+"pen-2" 1.0 0 -2064490 true "" "plot count doves with [color = pink]"
+"pen-3" 1.0 0 -10899396 true "" "plot count doves with [color = green]"
 
 @#$#@#$#@
 ## WHAT IS IT?
